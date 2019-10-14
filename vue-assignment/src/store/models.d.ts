@@ -13,6 +13,14 @@ export interface Profile {
     image?: string;
   }
 
+  export interface UserForUpdate{
+      email:string;
+      bio?:string;
+      image?:string;
+      username:string;
+      password:string;
+  }
+
   export interface Article {
     slug: string;
     title: string;

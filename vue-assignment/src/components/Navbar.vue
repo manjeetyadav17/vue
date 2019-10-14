@@ -5,17 +5,20 @@
         <ul class="nav navbar-nav pull-xs-right">
           <li class="nav-item">
             <!-- Add "active" class when you're on that page" -->
-            <a class="nav-link active" href="">Home</a>
+            <router-link class="nav-link" to="/">
+                <i class="ion-compose"></i>&nbsp;Home
+            </router-link>
           </li>
           <li class="nav-item" v-if="username">
-            <a class="nav-link" href="">
-              <i class="ion-compose"></i>&nbsp;New Post
-            </a>
+            <router-link class="nav-link" to="/editor">
+                <i class="ion-compose"></i>&nbsp;New Post
+            </router-link>
           </li>
           <li class="nav-item" v-if="username">
-            <a class="nav-link" href="">
-              <i class="ion-gear-a"></i>&nbsp;Settings
-            </a>
+              <router-link class="nav-link" to="/settings">
+                <i class="ion-compose"></i>&nbsp;Settings
+            </router-link>
+           
           </li>
            <li class="nav-item" v-if="username">
             <router-link class="nav-link" :to="'/@'+username">
