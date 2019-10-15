@@ -1,7 +1,7 @@
 import { VuexModule, Module, getModule, Mutation, Action, MutationAction } from 'vuex-module-decorators';
 import store from '@/store';
-import { User, Profile, UserSubmit, UserForUpdate } from '../models';
-import { loginUser, getProfile, updateUser, setJWT } from '../api';
+import { User, Profile, UserSubmit, UserForUpdate, UserRegister } from '../models';
+import { loginUser, getProfile, updateUser, setJWT , registerUser} from '../api';
 import { loginFailed } from '../constants';
 
 
@@ -17,6 +17,7 @@ class UsersModule extends VuexModule {
 
     @Mutation
     setUser(user: User) {
+        setJWT(user.token);
         this.user = user;
     }
 
@@ -34,7 +35,6 @@ class UsersModule extends VuexModule {
 
         try {
             const user = await loginUser(userSubmit);
-            setJWT(user.token);
             return user;
         }
         catch (e) {
@@ -49,10 +49,15 @@ class UsersModule extends VuexModule {
         return profile;
     }
 
-    //@Action({ commit: 'setUser' })
     @Action({ commit: 'setUser' })
     async updateUser(userUpdate: UserForUpdate) {
         const user = await updateUser(userUpdate);
+        return user;
+    }
+
+    @Action({ commit: 'setUser' })
+    async registerUser(userRegister: UserRegister){
+        const user = await registerUser(userRegister.user);
         return user;
     }
 

@@ -13,36 +13,34 @@
           <div class="feed-toggle">
             <ul class="nav nav-pills outline-active">
               <li class="nav-item">
-                <a class="nav-link disabled" href>Your Feed</a>
+                <a
+                  class="nav-link"
+                  @click="GetMyFeed()"
+                  v-bind:class="{active:tab=='user', disabled:!username}"
+                >Your Feed</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link active" href>Global Feed</a>
+                <a
+                  class="nav-link"
+                  @click="GetGlobalFeed()"
+                  v-bind:class="{active:tab=='global'}"
+                >Global Feed</a>
+              </li>
+              <li class="nav-item" v-if="tab!='global'&&tab!='user'">
+                <a class="nav-link" v-bind:class="{active:tab!='global'&&tab!='user'}">#{{tab}}</a>
               </li>
             </ul>
           </div>
 
-          <ArticlePreview
-          v-for="article in globalFeed"
-          :article="article"
-          :key="article.slug"
-          >
-          </ArticlePreview>
-         
+          <ArticlePreview v-for="article in globalFeed" :article="article" :key="article.slug"></ArticlePreview>
         </div>
 
         <div class="col-md-3">
           <div class="sidebar">
             <p>Popular Tags</p>
 
-            <div class="tag-list">
-              <a href class="tag-pill tag-default">programming</a>
-              <a href class="tag-pill tag-default">javascript</a>
-              <a href class="tag-pill tag-default">emberjs</a>
-              <a href class="tag-pill tag-default">angularjs</a>
-              <a href class="tag-pill tag-default">react</a>
-              <a href class="tag-pill tag-default">mean</a>
-              <a href class="tag-pill tag-default">node</a>
-              <a href class="tag-pill tag-default">rails</a>
+            <div class="tag-list" v-for="tag in tags" :key="tag">
+              <a class="tag-pill tag-default" @click="filterByTag(tag)">{{tag}}</a>
             </div>
           </div>
         </div>
@@ -55,6 +53,7 @@ import { Vue, Component } from "vue-property-decorator";
 import ArticlePreview from "@/components/article/ArticlePreview.vue";
 import { Article } from "../store/models";
 import articles from "../store/modeules/articles";
+import users from "../store/modeules/users";
 
 @Component({
   components: {
@@ -63,9 +62,36 @@ import articles from "../store/modeules/articles";
 })
 export default class Home extends Vue {
   globalFeed: Article[] = [];
+  tab: string = "";
+  tags?: string[] | null = [];
 
   created() {
-    articles.refreshGlobalFeed().then(() => {
+    this.GetGlobalFeed();
+    articles.fetchTags().then(() => (this.tags = articles.tags));
+  }
+
+  GetMyFeed() {
+    if (!users.usernameExists) return;
+    this.tab = "user";
+    articles.refreshGlobalFeed("user").then(() => {
+      this.globalFeed = articles.Feed;
+    });
+  }
+
+  GetGlobalFeed() {
+    this.tab = "global";
+    articles.refreshGlobalFeed("global").then(() => {
+      this.globalFeed = articles.Feed;
+    });
+  }
+
+  get username() {
+    return users.usernameExists;
+  }
+
+  filterByTag(tag: string) {
+    this.tab = tag;
+    articles.getFeedByQuery("tag=" + tag).then(() => {
       this.globalFeed = articles.Feed;
     });
   }

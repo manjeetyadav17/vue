@@ -10,7 +10,7 @@
             </router-link>
           </li>
           <li class="nav-item" v-if="username">
-            <router-link class="nav-link" to="/editor">
+            <router-link class="nav-link" to="/editor/">
                 <i class="ion-compose"></i>&nbsp;New Post
             </router-link>
           </li>

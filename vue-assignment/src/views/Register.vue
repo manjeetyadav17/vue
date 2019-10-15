@@ -9,23 +9,23 @@
           <a href="">Have an account?</a>
         </p>
 
-        <ul class="error-messages">
-          <li>That email is already taken</li>
-        </ul>
+        <ul class="error-messages" v-if="signuperror">
+            <li>{{signuperror}}</li>
+          </ul>
 
         <form>
           <fieldset class="form-group">
-            <input class="form-control form-control-lg" type="text" placeholder="Your Name">
+            <input class="form-control form-control-lg" type="text" placeholder="Your Name" v-model="user.user.username">
           </fieldset>
           <fieldset class="form-group">
-            <input class="form-control form-control-lg" type="text" placeholder="Email">
+            <input class="form-control form-control-lg" type="text" placeholder="Email" v-model="user.user.email">
           </fieldset>
           <fieldset class="form-group">
-            <input class="form-control form-control-lg" type="password" placeholder="Password">
+            <input class="form-control form-control-lg" type="password" placeholder="Password" v-model="user.user.password">
           </fieldset>
-          <button class="btn btn-lg btn-primary pull-xs-right">
+          <a class="btn btn-lg btn-primary pull-xs-right" @click="signUp()">
             Sign up
-          </button>
+          </a>
         </form>
       </div>
 
@@ -33,3 +33,26 @@
   </div>
 </div>
 </template>
+
+<script lang="ts">
+import { Vue, Component } from "vue-property-decorator";
+import users from "../store/modeules/users";
+import { UserRegister } from "../store/models";
+
+@Component
+export default class Register extends Vue{
+  user:UserRegister={
+    user:{
+      email:'',
+      password:'',
+      username:''
+    }
+  };
+
+  signuperror:string='';
+
+  signUp(){
+    users.registerUser(this.user).then(()=>this.$router.push("/")).catch((err) => console.log(err));
+  }
+}
+</script>

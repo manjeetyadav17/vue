@@ -27,7 +27,7 @@ export default new Router({
       component: () => import('@/views/Settings.vue'),
     },
     {
-      path: '/editor',
+      path: '/editor/:slug?',
       name: 'editor',
       component: () => import('@/views/Editor.vue'),
     },
@@ -35,6 +35,11 @@ export default new Router({
       path: '/@:username',
       name: 'profile',
       component: ()=> import('@/views/Profile.vue'),
+    },
+    {
+      path: '/article/:slug',
+      name: 'article',
+      component: ()=> import('@/views/Article.vue'),
     },
   ],
 });

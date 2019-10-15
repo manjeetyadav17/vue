@@ -3,3 +3,7 @@ export const login: string = '/users/login';
 export const articlesUrl: string = '/articles';
 export const profile: string = "/profiles";
 export const userUpdate: string = "/user";
+export const registerUser: string ="/users";
+export const userFeed: string = "/articles/feed";
+export const comments: string = "/comments";
+export const tags: string="/tags";

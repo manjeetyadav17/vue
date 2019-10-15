@@ -1,104 +1,80 @@
 <template>
-    <div class="profile-page">
+  <div class="profile-page">
+    <div class="user-info">
+      <div class="container">
+        <div class="row">
+          <div class="col-xs-12 col-md-10 offset-md-1">
+            <img :src="profile.image" class="user-img" />
+            <h4>{{profile.username}}</h4>
+            <p v-if="profile.bio">{{profile.bio}}</p>
+            <button class="btn btn-sm btn-outline-secondary action-btn">
+              <i class="ion-plus-round"></i>
+              &nbsp;
+              Follow {{profile.username}}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
-  <div class="user-info">
     <div class="container">
       <div class="row">
-
         <div class="col-xs-12 col-md-10 offset-md-1">
-          <img :src="profile.image" class="user-img" />
-          <h4>{{profile.username}}</h4>
-          <p v-if="profile.bio">
-            {{profile.bio}}
-          </p>
-          <button class="btn btn-sm btn-outline-secondary action-btn">
-            <i class="ion-plus-round"></i>
-            &nbsp;
-            Follow {{profile.username}} 
-          </button>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-  <div class="container">
-    <div class="row">
-
-      <div class="col-xs-12 col-md-10 offset-md-1">
-        <div class="articles-toggle">
-          <ul class="nav nav-pills outline-active">
-            <li class="nav-item">
-              <a class="nav-link active" href="">My Articles</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="">Favorited Articles</a>
-            </li>
-          </ul>
-        </div>
-
-        <div class="article-preview">
-          <div class="article-meta">
-            <a href=""><img src="http://i.imgur.com/Qr71crq.jpg" /></a>
-            <div class="info">
-              <a href="" class="author">Eric Simons</a>
-              <span class="date">January 20th</span>
-            </div>
-            <button class="btn btn-outline-primary btn-sm pull-xs-right">
-              <i class="ion-heart"></i> 29
-            </button>
-          </div>
-          <a href="" class="preview-link">
-            <h1>How to build webapps that scale</h1>
-            <p>This is the description for the post.</p>
-            <span>Read more...</span>
-          </a>
-        </div>
-
-        <div class="article-preview">
-          <div class="article-meta">
-            <a href=""><img src="http://i.imgur.com/N4VcUeJ.jpg" /></a>
-            <div class="info">
-              <a href="" class="author">Albert Pai</a>
-              <span class="date">January 20th</span>
-            </div>
-            <button class="btn btn-outline-primary btn-sm pull-xs-right">
-              <i class="ion-heart"></i> 32
-            </button>
-          </div>
-          <a href="" class="preview-link">
-            <h1>The song you won't ever stop singing. No matter how hard you try.</h1>
-            <p>This is the description for the post.</p>
-            <span>Read more...</span>
-            <ul class="tag-list">
-              <li class="tag-default tag-pill tag-outline">Music</li>
-              <li class="tag-default tag-pill tag-outline">Song</li>
+          <div class="articles-toggle">
+            <ul class="nav nav-pills outline-active">
+              <li class="nav-item">
+                <a class="nav-link" @click="MyArticles()" v-bind:class="{active:tab=='myarticle'}">My Articles</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" @click="favoriteArticle()" v-bind:class="{active:tab!='myarticle'}">Favorited Articles</a>
+              </li>
             </ul>
-          </a>
+          </div>
+          <ArticlePreview v-for="article in Feed" :article="article" :key="article.slug"></ArticlePreview>
         </div>
-
-
       </div>
-
     </div>
   </div>
-
-</div>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from "vue-property-decorator";
-import users from '../store/modeules/users';
+import ArticlePreview from "@/components/article/ArticlePreview.vue";
+import users from "../store/modeules/users";
+import { Article } from "../store/models";
+import articles from "../store/modeules/articles";
 
-@Component
-export default class Profile extends Vue{
-  
-  created(){
+@Component({
+  components: { ArticlePreview }
+})
+export default class Profile extends Vue {
+  Feed: Article[] = [];
+  tab:string='myarticle';
+
+  created() {
     users.loadProfile(this.$route.params.username);
+    this.MyArticles();
   }
 
-  get profile(){
+  get profile() {
     return users.profile;
+  }
+
+  MyArticles() {
+    this.tab="myarticle";
+    this.getFeed("author");
+  }
+
+  favoriteArticle() {
+    this.tab="favoriatedarticle";
+    this.getFeed("favorited");
+  }
+
+  private getFeed(query: string) {
+    if (users.user) {
+      articles.getFeedByQuery(query + "=" + users.user.username)
+        .then(() => (this.Feed = articles.Feed));
+    }
   }
 }
 </script>

@@ -47,10 +47,10 @@
                   v-model="user.password"
                 />
               </fieldset>
-              <button
+              <a
                 class="btn btn-lg btn-primary pull-xs-right"
                 @click="updateSettings()"
-              >Update Settings</button>
+              >Update Settings</a>
             </fieldset>
           </form>
           <hr />
