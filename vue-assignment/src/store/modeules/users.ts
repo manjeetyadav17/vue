@@ -1,7 +1,7 @@
 import { VuexModule, Module, getModule, Mutation, Action, MutationAction } from 'vuex-module-decorators';
 import store from '@/store';
 import { User, Profile, UserSubmit, UserForUpdate, UserRegister } from '../models';
-import { loginUser, getProfile, updateUser, setJWT , registerUser} from '../api';
+import { loginUser, getProfile, updateUser, setJWT, registerUser } from '../api';
 import { loginFailed } from '../constants';
 
 
@@ -25,6 +25,12 @@ class UsersModule extends VuexModule {
     setProfile(profile: Profile) {
         this.profile = profile;
     }
+
+    @Mutation
+    userLogout(){
+        this.user=null;
+    }
+
 
     get usernameExists(): string {
         return this.user != null ? this.user.username : '';
@@ -56,9 +62,13 @@ class UsersModule extends VuexModule {
     }
 
     @Action({ commit: 'setUser' })
-    async registerUser(userRegister: UserRegister){
+    async registerUser(userRegister: UserRegister) {
         const user = await registerUser(userRegister.user);
         return user;
+    }
+
+    @Action({ commit: 'userLogout' })
+    async logoutUser() {
     }
 
 }

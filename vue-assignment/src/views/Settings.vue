@@ -69,22 +69,24 @@ import { userUpdate } from "../store/urls";
 
 @Component
 export default class Settings extends Vue {
-  user:UserForUpdate = {
-    image:'',
-    bio:'',
-    username:'',
-    email:'',
-    password:''
+  user: UserForUpdate = {
+    image: "",
+    bio: "",
+    username: "",
+    email: "",
+    password: ""
   };
 
-  created(){
-    this.user.image = users.user !=null? users.user.image:'';
-    this.user.bio=users.user !=null? users.user.bio:'';
-    this.user.username=users.user !=null? users.user.username:'';
-    this.user.email=users.user !=null? users.user.email:'';
+  created() {
+    this.user.image = users.user != null ? users.user.image : "";
+    this.user.bio = users.user != null ? users.user.bio : "";
+    this.user.username = users.user != null ? users.user.username : "";
+    this.user.email = users.user != null ? users.user.email : "";
   }
- 
-  logout() {}
+
+  logout() {
+    users.logoutUser().then(()=>this.$router.push("/"));
+  }
 
   updateSettings() {
     users.updateUser(this.user);
