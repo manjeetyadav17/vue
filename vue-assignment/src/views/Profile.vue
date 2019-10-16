@@ -59,18 +59,14 @@ export default class Profile extends Vue {
   Feed: Article[] = [];
   tab: string = "myarticle";
 
-
   created() {
-    console.log("asdadas");
     users.loadProfile(this.$route.params.username).then(()=>
       this.MyArticles()
     );
-    
   }
 
-
   get profile() {
-    return users.profile;
+    return users.profile || {};
   }
 
   MyArticles() {

@@ -28,7 +28,7 @@
             class="btn btn-sm btn-outline-primary"
             v-if="article.author.username!=user.username"
           >
-            <i class="ion-plus-round"></i>
+             <i class="ion-heart"></i>
             &nbsp;
             Favorite Article
             <span
@@ -47,7 +47,7 @@
           <button
             class="btn btn-sm btn-outline-danger"
             v-if="article.author.username==user.username"
-             @click="deleteArticle()"
+            @click="deleteArticle()"
           >
             <i class="ion-trash-a"></i>
             &nbsp;
@@ -93,7 +93,7 @@
             class="btn btn-sm btn-outline-primary"
             v-if="article.author.username!=user.username"
           >
-            <i class="ion-edit"></i>
+             <i class="ion-heart"></i>
             &nbsp;
             Favorite Article
             <span
@@ -108,8 +108,7 @@
             <i class="ion-edit"></i>
             &nbsp;
             Edit Article
-          </router-link>
-          &nbsp;&nbsp;
+          </router-link>&nbsp;&nbsp;
           <button
             class="btn btn-sm btn-outline-danger"
             v-if="article.author.username==user.username"
@@ -124,7 +123,7 @@
       </div>
 
       <div class="row">
-        <div class="col-xs-12 col-md-8 offset-md-2">
+        <div class="col-xs-12 col-md-8 offset-md-2" v-if="user.username">
           <form class="card comment-form">
             <div class="card-block">
               <textarea
@@ -139,7 +138,10 @@
               <a class="btn btn-sm btn-primary" @click="postComment()">Post Comment</a>
             </div>
           </form>
-          <CommentPreview v-for="comment in comments" :comment="comment" :key="comment.id"></CommentPreview>
+          <CommentPreview v-for="comment in comments" :comment="comment" :key="comment.id" ></CommentPreview>
+        </div>
+        <div class="col-xs-12 col-md-8 offset-md-2" v-if="!user.username">
+          <router-link to="/login"> Sign in </router-link> or <router-link to="/register">sign up </router-link>to add comments on this article.
         </div>
       </div>
     </div>
@@ -164,7 +166,23 @@ import {
 })
 export default class Article extends Vue {
   comments?: Comment[] = [];
-  article?: ArticleModel | null = null;
+  article?: ArticleModel | null = {
+    slug: "",
+    title: "",
+    description: "",
+    body: "",
+    tagList: [],
+    createdAt: "",
+    updatedAt: "",
+    favorited: false,
+    favoritesCount: 0,
+    author: {
+      username: "",
+      bio: "",
+      image: "",
+      following: false
+    }
+  };
   comment: CommentSubmit = {
     body: "",
     slug: ""
@@ -180,8 +198,9 @@ export default class Article extends Vue {
   }
 
   get user() {
-    return users.user;
+    return users.user || {};
   }
+
 
   postComment() {
     if (this.article) {
@@ -190,9 +209,11 @@ export default class Article extends Vue {
     }
   }
 
-  deleteArticle(){
-    if(this.article){
-      articles.deleteArticle(this.article.slug).then(()=>this.$router.push("/"));
+  deleteArticle() {
+    if (this.article) {
+      articles
+        .deleteArticle(this.article.slug)
+        .then(() => this.$router.push("/"));
     }
   }
 }

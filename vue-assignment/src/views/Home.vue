@@ -38,9 +38,8 @@
         <div class="col-md-3">
           <div class="sidebar">
             <p>Popular Tags</p>
-
-            <div class="tag-list" v-for="tag in tags" :key="tag">
-              <a class="tag-pill tag-default" @click="filterByTag(tag)">{{tag}}</a>
+            <div class="tag-list" >
+              <a class="tag-pill tag-default" @click="filterByTag(tag)" v-for="tag in tags" :key="tag">{{tag}}</a>
             </div>
           </div>
         </div>

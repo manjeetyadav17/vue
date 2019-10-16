@@ -63,8 +63,6 @@ export default class Editor extends Vue {
   tagList: string = "";
 
   created() {
-    //console.log(this.$route.params.slug);
-    console.log(this.$route.params.slug);
     if (this.$route.params.slug) {
       this.articleSlug = this.$route.params.slug;
       articles.getArticle(this.articleSlug).then(() => {
