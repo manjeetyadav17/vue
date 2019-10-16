@@ -23,10 +23,18 @@
           <div class="articles-toggle">
             <ul class="nav nav-pills outline-active">
               <li class="nav-item">
-                <a class="nav-link" @click="MyArticles()" v-bind:class="{active:tab=='myarticle'}">My Articles</a>
+                <a
+                  class="nav-link"
+                  @click="MyArticles()"
+                  v-bind:class="{active:tab=='myarticle'}"
+                >My Articles</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" @click="favoriteArticle()" v-bind:class="{active:tab!='myarticle'}">Favorited Articles</a>
+                <a
+                  class="nav-link"
+                  @click="favoriteArticle()"
+                  v-bind:class="{active:tab!='myarticle'}"
+                >Favorited Articles</a>
               </li>
             </ul>
           </div>
@@ -49,30 +57,36 @@ import articles from "../store/modeules/articles";
 })
 export default class Profile extends Vue {
   Feed: Article[] = [];
-  tab:string='myarticle';
+  tab: string = "myarticle";
+
 
   created() {
-    users.loadProfile(this.$route.params.username);
-    this.MyArticles();
+    console.log("asdadas");
+    users.loadProfile(this.$route.params.username).then(()=>
+      this.MyArticles()
+    );
+    
   }
+
 
   get profile() {
     return users.profile;
   }
 
   MyArticles() {
-    this.tab="myarticle";
+    this.tab = "myarticle";
     this.getFeed("author");
   }
 
   favoriteArticle() {
-    this.tab="favoriatedarticle";
+    this.tab = "favoriatedarticle";
     this.getFeed("favorited");
   }
 
   private getFeed(query: string) {
-    if (users.user) {
-      articles.getFeedByQuery(query + "=" + users.user.username)
+    if (users.profile) {
+      articles
+        .getFeedByQuery(query + "=" + users.profile.username)
         .then(() => (this.Feed = articles.Feed));
     }
   }

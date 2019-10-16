@@ -66,6 +66,7 @@ export default class Home extends Vue {
   tags?: string[] | null = [];
 
   created() {
+    users.userAlredyLoggedIn();
     this.GetGlobalFeed();
     articles.fetchTags().then(() => (this.tags = articles.tags));
   }

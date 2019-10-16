@@ -65,6 +65,17 @@ export async function createArticle(article: ArticleSubmit): Promise<ArticleResp
     return response.data as ArticleResponse;
 }
 
+export async function updateArticle(article: ArticleSubmit): Promise<ArticleResponse> {
+    const response = await conduitApi.put(Urls.articlesUrl + `/${article.slug}`, {
+        article
+    });
+    return response.data as ArticleResponse;
+}
+
+export async function deleteArticle(slug:string){
+    return await conduitApi.delete(Urls.articlesUrl+`/${slug}`)
+}
+
 export async function fetchComents(slug: string): Promise<CommentsResponse> {
     const response = await conduitApi.get(Urls.articlesUrl + `/${slug}` + Urls.comments);
     return response.data as CommentsResponse;

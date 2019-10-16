@@ -15,19 +15,44 @@
             >{{article.author.username}}</router-link>
             <span class="date">{{article.createdAt}}</span>
           </div>
-          <button class="btn btn-sm btn-outline-secondary">
+          <button
+            class="btn btn-sm btn-outline-secondary"
+            v-if="article.author.username!=user.username"
+          >
             <i class="ion-plus-round"></i>
             &nbsp;
             Follow {{article.author.username}}
           </button>
           &nbsp;&nbsp;
-          <button class="btn btn-sm btn-outline-primary">
-            <i class="ion-heart"></i>
+          <button
+            class="btn btn-sm btn-outline-primary"
+            v-if="article.author.username!=user.username"
+          >
+            <i class="ion-plus-round"></i>
             &nbsp;
             Favorite Article
             <span
               class="counter"
             >({{article.favoritesCount}})</span>
+          </button>
+          <router-link
+            class="btn btn-sm btn-outline-secondary"
+            v-if="article.author.username==user.username"
+            :to="'/editor/'+article.slug"
+          >
+            <i class="ion-edit"></i>
+            &nbsp;
+            Edit Article
+          </router-link>&nbsp;&nbsp;
+          <button
+            class="btn btn-sm btn-outline-danger"
+            v-if="article.author.username==user.username"
+             @click="deleteArticle()"
+          >
+            <i class="ion-trash-a"></i>
+            &nbsp;
+            Delete Article
+            <span class="counter"></span>
           </button>
         </div>
       </div>
@@ -55,19 +80,45 @@
             <span class="date">{{article.createdAt}}</span>
           </div>
 
-          <button class="btn btn-sm btn-outline-secondary">
+          <button
+            class="btn btn-sm btn-outline-secondary"
+            v-if="article.author.username!=user.username"
+          >
             <i class="ion-plus-round"></i>
             &nbsp;
             Follow {{article.author.username}}
           </button>
-          &nbsp;
-          <button class="btn btn-sm btn-outline-primary">
-            <i class="ion-heart"></i>
+          &nbsp;&nbsp;
+          <button
+            class="btn btn-sm btn-outline-primary"
+            v-if="article.author.username!=user.username"
+          >
+            <i class="ion-edit"></i>
             &nbsp;
             Favorite Article
             <span
               class="counter"
             >({{article.favoritesCount}})</span>
+          </button>
+          <router-link
+            class="btn btn-sm btn-outline-secondary"
+            v-if="article.author.username==user.username"
+            :to="'/editor/'+article.slug"
+          >
+            <i class="ion-edit"></i>
+            &nbsp;
+            Edit Article
+          </router-link>
+          &nbsp;&nbsp;
+          <button
+            class="btn btn-sm btn-outline-danger"
+            v-if="article.author.username==user.username"
+            @click="deleteArticle()"
+          >
+            <i class="ion-trash-a"></i>
+            &nbsp;
+            Delete Article
+            <span class="counter"></span>
           </button>
         </div>
       </div>
@@ -113,7 +164,7 @@ import {
 })
 export default class Article extends Vue {
   comments?: Comment[] = [];
-  article?: ArticleModel|null=null;
+  article?: ArticleModel | null = null;
   comment: CommentSubmit = {
     body: "",
     slug: ""
@@ -134,9 +185,14 @@ export default class Article extends Vue {
 
   postComment() {
     if (this.article) {
-      console.log(this.comment.body);
       this.comment.slug = this.article.slug;
-      articles.createComment(this.comment).then(()=>this.comment.body='');
+      articles.createComment(this.comment).then(() => (this.comment.body = ""));
+    }
+  }
+
+  deleteArticle(){
+    if(this.article){
+      articles.deleteArticle(this.article.slug).then(()=>this.$router.push("/"));
     }
   }
 }

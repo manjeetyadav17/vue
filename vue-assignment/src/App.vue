@@ -2,7 +2,7 @@
   <div id="app">
     <div id="nav">
      <Navbar></Navbar>
-     <router-view/>
+     <router-view :key="$route.fullPath"/>
      <Footer></Footer>
     </div>
   </div>

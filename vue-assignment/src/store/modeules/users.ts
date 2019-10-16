@@ -1,8 +1,8 @@
 import { VuexModule, Module, getModule, Mutation, Action, MutationAction } from 'vuex-module-decorators';
 import store from '@/store';
 import { User, Profile, UserSubmit, UserForUpdate, UserRegister } from '../models';
-import { loginUser, getProfile, updateUser, setJWT, registerUser } from '../api';
-import { loginFailed } from '../constants';
+import { loginUser, getProfile, updateUser, setJWT, registerUser, clearJWT } from '../api';
+import { loginFailed, localStorageUserKey } from '../constants';
 
 
 @Module({
@@ -18,6 +18,7 @@ class UsersModule extends VuexModule {
     @Mutation
     setUser(user: User) {
         setJWT(user.token);
+        window.localStorage.setItem(localStorageUserKey,JSON.stringify(user));
         this.user = user;
     }
 
@@ -28,12 +29,22 @@ class UsersModule extends VuexModule {
 
     @Mutation
     userLogout(){
+        clearJWT();
+        window.localStorage.removeItem(localStorageUserKey);
         this.user=null;
     }
 
+    @Mutation
+    userLoggedIn(){
+        if(window.localStorage.getItem(localStorageUserKey)){
+            this.user= JSON.parse(String(window.localStorage.getItem(localStorageUserKey))) as User;
+            setJWT(this.user.token);
+        }
+    }
 
-    get usernameExists(): string {
-        return this.user != null ? this.user.username : '';
+
+    get usernameExists(): string | null{
+        return this.user != null ? this.user.username : null;
     }
 
     @Action({ commit: 'setUser' })
@@ -69,6 +80,10 @@ class UsersModule extends VuexModule {
 
     @Action({ commit: 'userLogout' })
     async logoutUser() {
+    }
+
+    @Action({ commit: 'userLoggedIn' })
+    async userAlredyLoggedIn(){
     }
 
 }

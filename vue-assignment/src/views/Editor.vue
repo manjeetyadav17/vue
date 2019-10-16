@@ -62,22 +62,29 @@ export default class Editor extends Vue {
   articleSlug?: string | null = null;
   tagList: string = "";
 
-  Created() {
-     if (this.$route.params.slug) {
+  created() {
+    //console.log(this.$route.params.slug);
+    console.log(this.$route.params.slug);
+    if (this.$route.params.slug) {
       this.articleSlug = this.$route.params.slug;
       articles.getArticle(this.articleSlug).then(() => {
-        // this.article.slug = articles.article != null ? articles.article.slug : null;
-        // this.article.title = articles.article != null ? articles.article.title : "";
-        // this.article.description = articles.article != null ? articles.article.description : "";
-        // this.article.body = articles.article != null ? articles.article.body : "";
-        // this.tagList = articles.article != null ? articles.article.tagList.toString() : "";
+        if (articles != null && articles.article) {
+          this.article.slug = articles.article.slug;
+          this.article.title = articles.article.title;
+          this.article.description = articles.article.description;
+          this.article.body = articles.article.body;
+          this.tagList =
+            articles.article.tagList != null
+              ? articles.article.tagList.toString()
+              : "";
+        }
       });
     }
   }
 
   publishArticle() {
     if (this.article != null) {
-      this.article.tagList = this.tagList.split(",").filter(x => x.length != 0);
+      this.article.tagList = this.tagList.split(",").filter(x => x.trim.length != 0);
     }
     if (this.articleSlug == null) {
       articles
@@ -89,6 +96,14 @@ export default class Editor extends Vue {
         })
         .catch(() => {});
     } else {
+       articles
+        .updateArticle(this.article)
+        .then(() => {
+          if (articles.article != null) {
+            this.$router.push(`/article/${articles.article.slug}`);
+          }
+        })
+        .catch(() => {});
     }
   }
 }

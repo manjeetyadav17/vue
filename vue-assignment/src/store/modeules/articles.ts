@@ -1,7 +1,7 @@
 import { VuexModule, Module, getModule, Mutation, Action } from 'vuex-module-decorators';
 import store from '@/store';
 import { Article, Comment, ArticleSubmit, CommentSubmit, CommentDelete } from '../models';
-import { getGlobalFeed, getUserFeed, fetchArticle, fetchComents, createArticle, createComment, deleteComment, fetchArticleByQuery,fetchTags } from '@/store/api'
+import { getGlobalFeed, getUserFeed, fetchArticle, fetchComents, createArticle, createComment, deleteComment, fetchArticleByQuery,fetchTags,deleteArticle, updateArticle } from '@/store/api'
 type FeedType = 'global' | 'user';
 
 @Module({
@@ -74,6 +74,8 @@ class ArticlesModule extends VuexModule {
         return response.article;
     }
 
+
+
     @Action({ commit: 'setComments' })
     async getComments(slug: string) {
         const response = await fetchComents(slug);
@@ -84,6 +86,17 @@ class ArticlesModule extends VuexModule {
     async createArticle(article: ArticleSubmit) {
         const response = await createArticle(article);
         return response.article;
+    }
+
+    @Action({ commit: 'setArticle' })
+    async updateArticle(article: ArticleSubmit) {
+        const response = await updateArticle(article);
+        return response.article;
+    }
+
+    @Action({})
+    async deleteArticle(slug:string){
+        await deleteArticle(slug)
     }
 
     @Action({ commit: 'addComment' })
@@ -104,6 +117,8 @@ class ArticlesModule extends VuexModule {
         const response=await fetchTags();
         return response.tags;
     }
+
+    
 }
 
 export default getModule(ArticlesModule);
