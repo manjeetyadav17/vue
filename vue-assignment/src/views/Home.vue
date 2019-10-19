@@ -32,7 +32,7 @@
             </ul>
           </div>
 
-          <ArticlePreview v-for="article in globalFeed" :article="article" :key="article.slug"></ArticlePreview>
+          <ArticlePreview v-for="article in Feed" :article="article" :key="article.slug"></ArticlePreview>
         </div>
 
         <div class="col-md-3">
@@ -60,7 +60,6 @@ import users from "../store/modeules/users";
   }
 })
 export default class Home extends Vue {
-  globalFeed: Article[] = [];
   tab: string = "";
   tags?: string[] | null = [];
 
@@ -70,19 +69,19 @@ export default class Home extends Vue {
     articles.fetchTags().then(() => (this.tags = articles.tags));
   }
 
+  get Feed(){
+    return articles.Feed || [];
+  }
+
   GetMyFeed() {
     if (!users.usernameExists) return;
     this.tab = "user";
-    articles.refreshGlobalFeed("user").then(() => {
-      this.globalFeed = articles.Feed;
-    });
+    articles.refreshGlobalFeed("user");
   }
 
   GetGlobalFeed() {
     this.tab = "global";
-    articles.refreshGlobalFeed("global").then(() => {
-      this.globalFeed = articles.Feed;
-    });
+    articles.refreshGlobalFeed("global");
   }
 
   get username() {
@@ -91,9 +90,7 @@ export default class Home extends Vue {
 
   filterByTag(tag: string) {
     this.tab = tag;
-    articles.getFeedByQuery("tag=" + tag).then(() => {
-      this.globalFeed = articles.Feed;
-    });
+    articles.getFeedByQuery("tag=" + tag);
   }
 }
 </script>

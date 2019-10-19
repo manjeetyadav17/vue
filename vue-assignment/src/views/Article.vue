@@ -17,18 +17,41 @@
           </div>
           <button
             class="btn btn-sm btn-outline-secondary"
-            v-if="article.author.username!=user.username"
+            v-if="article.author.username!=user.username && !profile.following"
+            @click="followUser()"
           >
             <i class="ion-plus-round"></i>
             &nbsp;
             Follow {{article.author.username}}
           </button>
+          <button
+            class="btn btn-sm btn-secondary"
+            v-if="article.author.username!=user.username  && profile.following"
+            @click="followUser()"
+          >
+            <i class="ion-plus-round"></i>
+            &nbsp;
+            Unfollow {{article.author.username}}
+          </button>
           &nbsp;&nbsp;
           <button
-            class="btn btn-sm btn-outline-primary"
-            v-if="article.author.username!=user.username"
+            class="btn btn-sm btn-primary"
+            v-if="article.author.username!=user.username && article.favorited"
+            @click="favoriteArticle()"
           >
-             <i class="ion-heart"></i>
+            <i class="ion-heart"></i>
+            &nbsp;
+            UnFavorite Article
+            <span
+              class="counter"
+            >({{article.favoritesCount}})</span>
+          </button>
+          <button
+            class="btn btn-sm btn-outline-primary"
+            v-if="article.author.username!=user.username && !article.favorited"
+            @click="favoriteArticle()"
+          >
+            <i class="ion-heart"></i>
             &nbsp;
             Favorite Article
             <span
@@ -63,6 +86,11 @@
         <div class="col-md-12">
           <p>{{article.body}}</p>
         </div>
+
+      <ul class="tag-list" v-for="tag in article.tagList" :key="tag">
+        <li class="tag-default tag-outline tag-pill">{{tag}}</li>
+      </ul>
+
       </div>
 
       <hr />
@@ -82,18 +110,41 @@
 
           <button
             class="btn btn-sm btn-outline-secondary"
-            v-if="article.author.username!=user.username"
+            v-if="article.author.username!=user.username && !profile.following"
+            @click="followUser()"
           >
             <i class="ion-plus-round"></i>
             &nbsp;
             Follow {{article.author.username}}
           </button>
+          <button
+            class="btn btn-sm btn-secondary"
+            v-if="article.author.username!=user.username  && profile.following"
+            @click="followUser()"
+          >
+            <i class="ion-plus-round"></i>
+            &nbsp;
+            Unfollow {{article.author.username}}
+          </button>
           &nbsp;&nbsp;
           <button
-            class="btn btn-sm btn-outline-primary"
-            v-if="article.author.username!=user.username"
+            class="btn btn-sm btn-primary"
+            v-if="article.author.username!=user.username && article.favorited"
+            @click="favoriteArticle()"
           >
-             <i class="ion-heart"></i>
+            <i class="ion-heart"></i>
+            &nbsp;
+            UnFavorite Article
+            <span
+              class="counter"
+            >({{article.favoritesCount}})</span>
+          </button>
+          <button
+            class="btn btn-sm btn-outline-primary"
+            v-if="article.author.username!=user.username && !article.favorited"
+            @click="favoriteArticle()"
+          >
+            <i class="ion-heart"></i>
             &nbsp;
             Favorite Article
             <span
@@ -138,10 +189,11 @@
               <a class="btn btn-sm btn-primary" @click="postComment()">Post Comment</a>
             </div>
           </form>
-          <CommentPreview v-for="comment in comments" :comment="comment" :key="comment.id" ></CommentPreview>
+          <CommentPreview v-for="comment in comments" :comment="comment" :key="comment.id"></CommentPreview>
         </div>
         <div class="col-xs-12 col-md-8 offset-md-2" v-if="!user.username">
-          <router-link to="/login"> Sign in </router-link> or <router-link to="/register">sign up </router-link>to add comments on this article.
+          <router-link to="/login">Sign in</router-link>or
+          <router-link to="/register">sign up</router-link>to add comments on this article.
         </div>
       </div>
     </div>
@@ -165,42 +217,32 @@ import {
   }
 })
 export default class Article extends Vue {
-  comments?: Comment[] = [];
-  article?: ArticleModel | null = {
-    slug: "",
-    title: "",
-    description: "",
-    body: "",
-    tagList: [],
-    createdAt: "",
-    updatedAt: "",
-    favorited: false,
-    favoritesCount: 0,
-    author: {
-      username: "",
-      bio: "",
-      image: "",
-      following: false
-    }
-  };
   comment: CommentSubmit = {
     body: "",
     slug: ""
   };
 
   created() {
-    articles
-      .getArticle(this.$route.params.slug)
-      .then(() => (this.article = articles.article));
-    articles
-      .getComments(this.$route.params.slug)
-      .then(() => (this.comments = articles.comments));
+    articles.getArticle(this.$route.params.slug).then(() => {
+      users.loadProfile(this.article.author.username);
+    });
+    articles.getComments(this.$route.params.slug);
+  }
+  get article() {
+    return articles.article || { slug: "", author: { username: "" }, favorited:false };
+  }
+
+  get comments() {
+    return articles.comments || [];
   }
 
   get user() {
     return users.user || {};
   }
 
+  get profile() {
+    return users.profile || { following: false };
+  }
 
   postComment() {
     if (this.article) {
@@ -214,6 +256,22 @@ export default class Article extends Vue {
       articles
         .deleteArticle(this.article.slug)
         .then(() => this.$router.push("/"));
+    }
+  }
+
+  followUser() {
+    if (!this.profile.following) {
+      users.follow(this.article.author.username);
+    } else {
+      users.unfollow(this.article.author.username);
+    }
+  }
+
+  favoriteArticle(){
+    if (!this.article.favorited) {
+      articles.favoriteArticle(this.article.slug);
+    } else {
+      articles.unFavoriteArticle(this.article.slug);
     }
   }
 }

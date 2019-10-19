@@ -7,3 +7,5 @@ export const registerUser: string ="/users";
 export const userFeed: string = "/articles/feed";
 export const comments: string = "/comments";
 export const tags: string="/tags";
+export const follow: string="/follow";
+export const favorite: string="/favorite";

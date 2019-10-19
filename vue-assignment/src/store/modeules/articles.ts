@@ -1,7 +1,7 @@
 import { VuexModule, Module, getModule, Mutation, Action } from 'vuex-module-decorators';
 import store from '@/store';
 import { Article, Comment, ArticleSubmit, CommentSubmit, CommentDelete } from '../models';
-import { getGlobalFeed, getUserFeed, fetchArticle, fetchComents, createArticle, createComment, deleteComment, fetchArticleByQuery,fetchTags,deleteArticle, updateArticle } from '@/store/api'
+import { getGlobalFeed, getUserFeed, fetchArticle, fetchComents, createArticle, createComment, deleteComment, fetchArticleByQuery, fetchTags, deleteArticle, updateArticle, favoriteArticle, unFavoriteArticle } from '@/store/api'
 type FeedType = 'global' | 'user';
 
 @Module({
@@ -50,6 +50,11 @@ class ArticlesModule extends VuexModule {
         this.tags = tags;
     }
 
+    @Mutation
+    updateFeed(article: Article) {
+        this.Feed.splice(this.Feed.findIndex(x => x.slug == article.slug), 1, article);
+    }
+
     @Action({ commit: 'setFeed' })
     async refreshGlobalFeed(feed: FeedType) {
         if (feed == "global") {
@@ -74,7 +79,30 @@ class ArticlesModule extends VuexModule {
         return response.article;
     }
 
+    @Action({ commit: 'setArticle' })
+    async favoriteArticle(slug: string) {
+        const response = await favoriteArticle(slug);
+        return response.article;
+    }
 
+    @Action({ commit: 'setArticle' })
+    async unFavoriteArticle(slug: string) {
+        const response = await unFavoriteArticle(slug);
+        return response.article;
+    }
+
+
+    @Action({ commit: 'updateFeed' })
+    async favoriteArticleByHeart(slug: string) {
+        const response = await favoriteArticle(slug);
+        return response.article;
+    }
+
+    @Action({ commit: 'updateFeed' })
+    async UnfavoriteArticleByHeart(slug: string) {
+        const response = await unFavoriteArticle(slug);
+        return response.article;
+    }
 
     @Action({ commit: 'setComments' })
     async getComments(slug: string) {
@@ -95,7 +123,7 @@ class ArticlesModule extends VuexModule {
     }
 
     @Action({})
-    async deleteArticle(slug:string){
+    async deleteArticle(slug: string) {
         await deleteArticle(slug)
     }
 
@@ -112,13 +140,13 @@ class ArticlesModule extends VuexModule {
         return comment.id;
     }
 
-    @Action({commit: 'setTags'})
-    async fetchTags(){
-        const response=await fetchTags();
+    @Action({ commit: 'setTags' })
+    async fetchTags() {
+        const response = await fetchTags();
         return response.tags;
     }
 
-    
+
 }
 
 export default getModule(ArticlesModule);

@@ -31,6 +31,16 @@ export async function getProfile(username: string): Promise<Profile> {
     return (response.data as ProfileResponse).profile
 }
 
+export async function follow(username: string): Promise<Profile> {
+    const response = await conduitApi.post(`${Urls.profile}/${username}`+Urls.follow);
+    return (response.data as ProfileResponse).profile
+}
+
+export async function unFollow(username: string): Promise<Profile> {
+    const response = await conduitApi.delete(`${Urls.profile}/${username}`+Urls.follow);
+    return (response.data as ProfileResponse).profile
+}
+
 export async function getGlobalFeed() {
     const response = await conduitApi.get(Urls.articlesUrl);
     return response.data as ArticlesResponse;
@@ -74,6 +84,16 @@ export async function updateArticle(article: ArticleSubmit): Promise<ArticleResp
 
 export async function deleteArticle(slug:string){
     return await conduitApi.delete(Urls.articlesUrl+`/${slug}`)
+}
+
+export async function favoriteArticle(slug: string): Promise<ArticleResponse> {
+    const response = await conduitApi.post(Urls.articlesUrl + `/${slug}`+Urls.favorite);
+    return response.data as ArticleResponse;
+}
+
+export async function unFavoriteArticle(slug: string): Promise<ArticleResponse> {
+    const response = await conduitApi.delete(Urls.articlesUrl + `/${slug}`+Urls.favorite);
+    return response.data as ArticleResponse;
 }
 
 export async function fetchComents(slug: string): Promise<CommentsResponse> {

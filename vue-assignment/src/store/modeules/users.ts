@@ -1,7 +1,7 @@
 import { VuexModule, Module, getModule, Mutation, Action, MutationAction } from 'vuex-module-decorators';
 import store from '@/store';
 import { User, Profile, UserSubmit, UserForUpdate, UserRegister } from '../models';
-import { loginUser, getProfile, updateUser, setJWT, registerUser, clearJWT } from '../api';
+import { loginUser, getProfile, updateUser, setJWT, registerUser, clearJWT, follow, unFollow } from '../api';
 import { loginFailed, localStorageUserKey } from '../constants';
 
 
@@ -63,6 +63,18 @@ class UsersModule extends VuexModule {
     @Action({ commit: 'setProfile' })
     async loadProfile(username: string) {
         const profile = await getProfile(username);
+        return profile;
+    }
+
+    @Action({commit: 'setProfile'})
+    async follow(username:string){
+        const profile = await follow(username);
+        return profile;
+    }
+
+    @Action({commit: 'setProfile'})
+    async unfollow(username:string){
+        const profile = await unFollow(username);
         return profile;
     }
 

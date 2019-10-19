@@ -1,7 +1,7 @@
 <template>
     <nav class="navbar navbar-light">
       <div class="container">
-        <a class="navbar-brand" href="index.html">conduit</a>
+        <router-link class="navbar-brand" to="/">conduit</router-link>
         <ul class="nav navbar-nav pull-xs-right">
           <li class="nav-item">
             <!-- Add "active" class when you're on that page" -->
@@ -11,7 +11,7 @@
           </li>
           <li class="nav-item" v-if="username">
             <router-link class="nav-link" to="/editor/">
-                <i class="ion-compose"></i>&nbsp;New Post
+                <i class="ion-compose"></i>&nbsp;New Article
             </router-link>
           </li>
           <li class="nav-item" v-if="username">

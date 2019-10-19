@@ -7,11 +7,31 @@
             <img :src="profile.image" class="user-img" />
             <h4>{{profile.username}}</h4>
             <p v-if="profile.bio">{{profile.bio}}</p>
-            <button class="btn btn-sm btn-outline-secondary action-btn">
+            <button
+              class="btn btn-sm btn-secondary action-btn"
+              v-if="profile.following && user.username != profile.username"
+              @click="followUser()"
+            >
+              <i class="ion-plus-round"></i>
+              &nbsp;
+              Unfollow {{profile.username}}
+            </button>
+            <button
+              class="btn btn-sm btn-outline-secondary action-btn"
+              v-if="!profile.following && user.username != profile.username"
+              @click="followUser()"
+            >
               <i class="ion-plus-round"></i>
               &nbsp;
               Follow {{profile.username}}
             </button>
+            <router-link
+              to="/settings"
+              class="btn btn-sm btn-outline-secondary action-btn"
+              v-if="user.username == profile.username"
+            >
+              <i class="ion-gear-a"></i> Edit Profile Settings
+            </router-link>
           </div>
         </div>
       </div>
@@ -39,6 +59,7 @@
             </ul>
           </div>
           <ArticlePreview v-for="article in Feed" :article="article" :key="article.slug"></ArticlePreview>
+          <div class="artcle-preview" v-show="!Feed.length">No articles are here... yet.</div>
         </div>
       </div>
     </div>
@@ -56,17 +77,20 @@ import articles from "../store/modeules/articles";
   components: { ArticlePreview }
 })
 export default class Profile extends Vue {
-  Feed: Article[] = [];
   tab: string = "myarticle";
 
   created() {
-    users.loadProfile(this.$route.params.username).then(()=>
-      this.MyArticles()
-    );
+    users
+      .loadProfile(this.$route.params.username)
+      .then(() => this.MyArticles());
   }
 
   get profile() {
-    return users.profile || {};
+    return users.profile || { following: false, username: "" };
+  }
+
+  get user() {
+    return users.user || {};
   }
 
   MyArticles() {
@@ -79,11 +103,21 @@ export default class Profile extends Vue {
     this.getFeed("favorited");
   }
 
+  get Feed(){
+    return articles.Feed || [];
+  }
+
   private getFeed(query: string) {
     if (users.profile) {
       articles
-        .getFeedByQuery(query + "=" + users.profile.username)
-        .then(() => (this.Feed = articles.Feed));
+        .getFeedByQuery(query + "=" + users.profile.username);
+    }
+  }
+  followUser() {
+    if (!this.profile.following) {
+      users.follow(this.profile.username);
+    } else {
+      users.unfollow(this.profile.username);
     }
   }
 }
