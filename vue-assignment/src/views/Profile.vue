@@ -80,6 +80,9 @@ export default class Profile extends Vue {
   tab: string = "myarticle";
 
   created() {
+    if(!users.usernameExists){
+      this.$router.push('/');
+    }
     users
       .loadProfile(this.$route.params.username)
       .then(() => this.MyArticles());

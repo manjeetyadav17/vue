@@ -49,6 +49,7 @@
 import { Vue, Component } from "vue-property-decorator";
 import { Article, ArticleSubmit } from "../store/models";
 import articles from "../store/modeules/articles";
+import users from "../store/modeules/users";
 
 @Component
 export default class Editor extends Vue {
@@ -63,6 +64,11 @@ export default class Editor extends Vue {
   tagList: string = "";
 
   created() {
+
+    if(!users.usernameExists){
+      this.$router.push('/');
+    }
+
     if (this.$route.params.slug) {
       this.articleSlug = this.$route.params.slug;
       articles.getArticle(this.articleSlug).then(() => {

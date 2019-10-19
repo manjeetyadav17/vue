@@ -78,6 +78,9 @@ export default class Settings extends Vue {
   };
 
   created() {
+    if(!users.usernameExists){
+      this.$router.push('/');
+    }
     this.user.image = users.user != null ? users.user.image : "";
     this.user.bio = users.user != null ? users.user.bio : "";
     this.user.username = users.user != null ? users.user.username : "";
